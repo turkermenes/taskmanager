@@ -1,9 +1,6 @@
 package com.ornek.taskmanager.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -21,7 +18,7 @@ public class HealthController {
     }
 
     @GetMapping("/hello/{name}")
-    public String hello(@PathVariable String name) {
-        return "Merhaba " + name + ", Task Manager'a hoş geldin!";
+    public String hello(@PathVariable String name, @RequestParam(defaultValue = "tr") String lang) {
+        return lang.equals("tr") ? "Merhaba " + name + ", Task Manager'a hoş geldin!" : "Hello " + name + ", welcome to Task Manager!";
     }
 }
