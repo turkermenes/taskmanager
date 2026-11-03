@@ -9,16 +9,19 @@ import com.ornek.taskmanager.model.TaskStatus;
 import com.ornek.taskmanager.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TaskService {
 
     private final TaskRepository taskRepository;
 
+    @Transactional
     public TaskResponse create(TaskCreateRequest request) {
         LocalDateTime now = LocalDateTime.now();
 
@@ -45,6 +48,7 @@ public class TaskService {
         return TaskResponse.from(findTaskOrThrow(id));
     }
 
+    @Transactional
     public TaskResponse update(Long id, TaskUpdateRequest request) {
         Task task = findTaskOrThrow(id);
 
@@ -56,6 +60,7 @@ public class TaskService {
         return TaskResponse.from(taskRepository.save(task));
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!taskRepository.existsById(id)) {
             throw new TaskNotFoundException(id);
