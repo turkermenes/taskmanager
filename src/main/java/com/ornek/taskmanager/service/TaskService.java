@@ -6,7 +6,9 @@ import com.ornek.taskmanager.dto.TaskUpdateRequest;
 import com.ornek.taskmanager.exception.TaskNotFoundException;
 import com.ornek.taskmanager.model.Task;
 import com.ornek.taskmanager.model.TaskStatus;
+import com.ornek.taskmanager.model.User;
 import com.ornek.taskmanager.repository.TaskRepository;
+import com.ornek.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,12 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public TaskResponse create(TaskCreateRequest request) {
+    public TaskResponse create(Long userId, TaskCreateRequest request) {
         LocalDateTime now = LocalDateTime.now();
+        User owner = userRepository.getReferenceById(userId);
 
         Task task = Task.builder()
                 .title(request.title())
@@ -33,27 +37,28 @@ public class TaskService {
                 .status(TaskStatus.TODO)
                 .createdAt(now)
                 .updatedAt(now)
+                .owner(owner)
                 .build();
 
         Task saved = taskRepository.save(task);
-        log.info("Görev oluşturuldu. id={}", saved.getId());
+        log.info("Görev oluşturuldu. id={}, userId={}", saved.getId(), userId);
         return TaskResponse.from(saved);
     }
 
-    public List<TaskResponse> getAll() {
-        return taskRepository.findAll()
+    public List<TaskResponse> getAll(Long userId) {
+        return taskRepository.findAllByOwnerId(userId)
                 .stream()
                 .map(TaskResponse::from)
                 .toList();
     }
 
-    public TaskResponse getById(Long id) {
-        return TaskResponse.from(findTaskOrThrow(id));
+    public TaskResponse getById(Long userId, Long id) {
+        return TaskResponse.from(findOwnedTaskOrThrow(userId, id));
     }
 
     @Transactional
-    public TaskResponse update(Long id, TaskUpdateRequest request) {
-        Task task = findTaskOrThrow(id);
+    public TaskResponse update(Long userId, Long id, TaskUpdateRequest request) {
+        Task task = findOwnedTaskOrThrow(userId, id);
 
         task.setTitle(request.title());
         task.setDescription(request.description());
@@ -64,16 +69,14 @@ public class TaskService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!taskRepository.existsById(id)) {
-            throw new TaskNotFoundException(id);
-        }
-        taskRepository.deleteById(id);
-        log.info("Görev silindi. id={}", id);
+    public void delete(Long userId, Long id) {
+        Task task = findOwnedTaskOrThrow(userId, id);
+        taskRepository.delete(task);
+        log.info("Görev silindi. id={}, userId={}", id, userId);
     }
 
-    private Task findTaskOrThrow(Long id) {
-        return taskRepository.findById(id)
+    private Task findOwnedTaskOrThrow(Long userId, Long id) {
+        return taskRepository.findByIdAndOwnerId(id, userId)
                 .orElseThrow(() -> new TaskNotFoundException(id));
     }
 }

@@ -64,6 +64,26 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ProblemDetail handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getMessage()
+        );
+        problem.setTitle("Kullanıcı zaten mevcut");
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage()
+        );
+        problem.setTitle("Kimlik doğrulama başarısız");
+        return problem;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception ex) {
         if (ex instanceof ErrorResponse errorResponse) {

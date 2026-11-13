@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,23 +27,24 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @Operation(summary = "Tüm görevleri listeler")
+    @Operation(summary = "Kullanıcının tüm görevlerini listeler")
     @GetMapping
-    public List<TaskResponse> getAll() {
-        return taskService.getAll();
+    public List<TaskResponse> getAll(@AuthenticationPrincipal Jwt jwt) {
+        return taskService.getAll(currentUserId(jwt));
     }
 
     @Operation(summary = "Id ile görev getirir")
     @GetMapping("/{id}")
-    public TaskResponse getById(@PathVariable Long id) {
-        return taskService.getById(id);
+    public TaskResponse getById(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id) {
+        return taskService.getById(currentUserId(jwt), id);
     }
 
     @Operation(summary = "Yeni görev oluşturur")
     @ApiResponse(responseCode = "201", description = "Görev oluşturuldu")
     @PostMapping
-    public ResponseEntity<TaskResponse> create(@Valid @RequestBody TaskCreateRequest request) {
-        TaskResponse created = taskService.create(request);
+    public ResponseEntity<TaskResponse> create(@AuthenticationPrincipal Jwt jwt,
+                                               @Valid @RequestBody TaskCreateRequest request) {
+        TaskResponse created = taskService.create(currentUserId(jwt), request);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -54,15 +57,20 @@ public class TaskController {
 
     @Operation(summary = "Görevi günceller")
     @PutMapping("/{id}")
-    public TaskResponse update(@PathVariable Long id,
+    public TaskResponse update(@AuthenticationPrincipal Jwt jwt,
+                               @PathVariable Long id,
                                @Valid @RequestBody TaskUpdateRequest request) {
-        return taskService.update(id, request);
+        return taskService.update(currentUserId(jwt), id, request);
     }
 
     @Operation(summary = "Görevi siler")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        taskService.delete(id);
+    public void delete(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id) {
+        taskService.delete(currentUserId(jwt), id);
+    }
+
+    private Long currentUserId(Jwt jwt) {
+        return jwt.getClaim("userId");
     }
 }

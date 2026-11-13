@@ -22,3 +22,8 @@ server:
 logging:
   level:
     com.ornek.taskmanager: DEBUG
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:E1GcPkMB0ViQeJ2IOw32/qZyU4nsL02hNCXJn3ZVmTA=}
+    expiration: 60m
