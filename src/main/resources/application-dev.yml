@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskmanager
+    username: taskmanager
+    password: taskmanager
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    secret: E1GcPkMB0ViQeJ2IOw32/qZyU4nsL02hNCXJn3ZVmTA=
+
+logging:
+  level:
+    com.ornek.taskmanager: DEBUG
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

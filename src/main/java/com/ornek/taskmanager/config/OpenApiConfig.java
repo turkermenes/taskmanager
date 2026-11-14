@@ -20,7 +20,7 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Task Manager API")
                         .version("v1")
-                        .description("Görev yönetimi için REST API")
+                        .description("Görev yönetimi için REST API.")
                         .contact(new Contact()
                                 .name("Enes Türker")
                                 .url("https://github.com/turkermenes")))
