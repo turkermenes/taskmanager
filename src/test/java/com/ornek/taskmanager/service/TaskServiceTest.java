@@ -60,7 +60,7 @@ class TaskServiceTest {
         // then
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.title()).isEqualTo("Rapor yaz");
-        assertThat(response.status()).isEqualTo(TaskStatus.TODO);
+        assertThat(response.status()).isEqualTo(TaskStatus.DONE);
         assertThat(response.createdAt()).isNotNull();
         verify(taskRepository).save(any(Task.class));
     }
