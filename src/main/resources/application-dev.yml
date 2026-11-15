@@ -15,7 +15,7 @@ app:
 
 logging:
   level:
-    com.ornek.taskmanager: DEBUG
+    dev.turkermenes.taskmanager: DEBUG
 
 management:
   endpoint:
