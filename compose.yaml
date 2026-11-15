@@ -18,7 +18,7 @@ services:
 
   backend:
     build: ./backend
-    image: taskmanager-backend:0.0.1
+    image: taskmanager-backend:1.0.0
     container_name: taskmanager-backend
     depends_on:
       postgres:
@@ -42,7 +42,7 @@ services:
 
   frontend:
     build: ./frontend
-    image: taskmanager-frontend:0.0.1
+    image: taskmanager-frontend:1.0.0
     container_name: taskmanager-frontend
     depends_on:
       backend:
