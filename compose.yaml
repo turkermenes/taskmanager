@@ -16,10 +16,10 @@ services:
       timeout: 5s
       retries: 10
 
-  app:
+  backend:
     build: ./backend
-    image: taskmanager:0.0.1
-    container_name: taskmanager-app
+    image: taskmanager-backend:0.0.1
+    container_name: taskmanager-backend
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,6 +38,17 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: taskmanager-frontend:0.0.1
+    container_name: taskmanager-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:8080"
     restart: unless-stopped
 
 volumes:

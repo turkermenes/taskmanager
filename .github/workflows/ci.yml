@@ -43,14 +43,44 @@ jobs:
           name: jacoco-report
           path: backend/target/site/jacoco/
 
-  docker-build:
-    name: Docker Image Build
+  frontend:
+    name: Frontend Build
     runs-on: ubuntu-latest
-    needs: build-and-test
+    defaults:
+      run:
+        working-directory: frontend
 
     steps:
       - name: Kodu indir
         uses: actions/checkout@v5
 
-      - name: Image oluştur
-        run: docker build -t taskmanager:ci ./backend
+      - name: Node.js 22 kur
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Derle (tip kontrolü dahil)
+        run: npm run build
+
+  docker-build:
+    name: Docker Image Build
+    runs-on: ubuntu-latest
+    needs: [ build-and-test, frontend ]
+
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v5
+
+      - name: Backend image oluştur
+        run: docker build -t taskmanager-backend:ci ./backend
+
+      - name: Frontend image oluştur
+        run: docker build -t taskmanager-frontend:ci ./frontend
