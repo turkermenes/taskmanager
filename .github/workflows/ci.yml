@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v5
+
+      - name: Java 21 kur
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Derle, test et ve coverage kontrolü yap
+        run: ./mvnw -B verify
+
+      - name: Coverage raporunu yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
+  docker-build:
+    name: Docker Image Build
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v5
+
+      - name: Image oluştur
+        run: docker build -t taskmanager:ci .
