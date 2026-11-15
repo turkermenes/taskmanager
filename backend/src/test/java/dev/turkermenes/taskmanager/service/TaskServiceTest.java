@@ -127,7 +127,7 @@ class TaskServiceTest {
         Task task1 = Task.builder().id(1L).title("Görev 1").status(TaskStatus.TODO).build();
         Task task2 = Task.builder().id(2L).title("Görev 2").status(TaskStatus.DONE).build();
 
-        when(taskRepository.findAllByOwnerId(USER_ID)).thenReturn(List.of(task1, task2));
+        when(taskRepository.findAllByOwnerIdOrderByCreatedAtDesc(USER_ID)).thenReturn(List.of(task1, task2));
 
         // when
         List<TaskResponse> allTasks = taskService.getAll(USER_ID);

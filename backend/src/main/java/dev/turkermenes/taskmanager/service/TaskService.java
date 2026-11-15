@@ -46,7 +46,7 @@ public class TaskService {
     }
 
     public List<TaskResponse> getAll(Long userId) {
-        return taskRepository.findAllByOwnerId(userId)
+        return taskRepository.findAllByOwnerIdOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(TaskResponse::from)
                 .toList();

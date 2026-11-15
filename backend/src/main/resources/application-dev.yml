@@ -12,6 +12,9 @@ spring:
 app:
   jwt:
     secret: E1GcPkMB0ViQeJ2IOw32/qZyU4nsL02hNCXJn3ZVmTA=
+  cors:
+    allowed-origins:
+      - http://localhost:5173
 
 logging:
   level:
