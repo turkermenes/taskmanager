@@ -17,6 +17,9 @@ jobs:
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
       - name: Kodu indir
@@ -28,6 +31,7 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+          cache-dependency-path: backend/pom.xml
 
       - name: Derle, test et ve coverage kontrolü yap
         run: ./mvnw -B verify
@@ -37,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: target/site/jacoco/
+          path: backend/target/site/jacoco/
 
   docker-build:
     name: Docker Image Build
@@ -49,4 +53,4 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Image oluştur
-        run: docker build -t taskmanager:ci .
+        run: docker build -t taskmanager:ci ./backend
