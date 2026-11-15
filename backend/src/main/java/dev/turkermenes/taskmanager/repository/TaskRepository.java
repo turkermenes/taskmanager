@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findAllByOwnerId(Long ownerId);
+    List<Task> findAllByOwnerIdOrderByCreatedAtDesc(Long ownerId);
 
     Optional<Task> findByIdAndOwnerId(Long id, Long ownerId);
 }
